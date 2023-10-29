@@ -18,7 +18,7 @@ class Command(BaseCommand):
 
         while db_up is False:
             try:
-                self.check(database=['defoult'])
+                self.check(databases=['default'])
                 db_up = True
             except (Psycopg2Error, OperationalError):
                 self.stdout.write('Database unvaliable, waiting 1 second...')
