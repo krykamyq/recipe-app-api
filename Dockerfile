@@ -1,7 +1,7 @@
 FROM python:3.9-alpine3.17
 LABEL maintainer="kamyq"
 
-ENV PYTHONUNBUFFRED 1
+ENV PYTHONUNBUFFERED 1
 
 COPY ./requirements.txt /tmp/requirements.txt
 COPY ./requirements.dev.txt /tmp/requirements.dev.txt
