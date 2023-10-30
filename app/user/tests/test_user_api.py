@@ -19,14 +19,14 @@ class PublicUserAPITests(TestCase):
     """Tests the public features of User API."""
 
     def setUp(self):
-        self.client - APIClient()
+        self.client = APIClient()
 
     def test_create_user_success(self):
         """"Test creating user is successfull"""
         payload = {
             'email': 'test@example.com',
             'password': 'testpass123',
-            'name': 'Test name'
+            'name': 'Test name',
         }
         res = self.client.post(CREATE_USER_URL, payload)
 
@@ -40,7 +40,7 @@ class PublicUserAPITests(TestCase):
         payload = {
             'email': 'test@example.com',
             'password': 'testpass123',
-            'name': 'Test name'
+            'name': 'Test name',
         }
         create_user(**payload)
 
@@ -52,7 +52,7 @@ class PublicUserAPITests(TestCase):
         payload = {
             'email': 'test@example.com',
             'password': 'test',
-            'name': 'Test name'
+            'name': 'Test name',
         }
 
         res = self.client.post(CREATE_USER_URL, payload)
