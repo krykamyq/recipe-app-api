@@ -1,6 +1,6 @@
 """Views for recipe APIs"""
 
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
@@ -31,7 +31,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-class TagsViewSet(viewsets.ModelViewSet):
+class TagsViewSet(mixins.ListModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.DestroyModelMixin,
+                  mixins.CreateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  viewsets.GenericViewSet):
     """"Views for Tags API."""
     serializer_class = TagsSerializer
     queryset = Tags.objects.all()
