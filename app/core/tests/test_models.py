@@ -79,3 +79,10 @@ class MotelTest(TestCase):
         tag = models.Tags.objects.create(name='New Tag', user=user)
 
         self.assertEqual(str(tag), tag.name)
+
+    def test_create_ingradint(self):
+        """Test for create ingradint."""
+        user = create_user()
+        ingradient = models.Ingradient.objects.create(
+            name='New Ingradient', user=user)
+        self.assertEqual(str(ingradient), ingradient.name)

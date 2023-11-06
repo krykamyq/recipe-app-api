@@ -8,8 +8,9 @@ from recipe.serializers import (
     RecipeSerializer,
     RecipeDetailSerializer,
     TagsSerializer,
+    IngradientSerializer
 )
-from core.models import Recipe, Tags
+from core.models import Recipe, Tags, Ingradient
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -31,20 +32,28 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
 
-class TagsViewSet(mixins.ListModelMixin,
-                  mixins.UpdateModelMixin,
-                  mixins.DestroyModelMixin,
-                  mixins.CreateModelMixin,
-                  mixins.RetrieveModelMixin,
-                  viewsets.GenericViewSet):
-    """"Views for Tags API."""
-    serializer_class = TagsSerializer
-    queryset = Tags.objects.all()
+class BaseRecipeAttrViewSet(mixins.ListModelMixin,
+                            mixins.UpdateModelMixin,
+                            mixins.DestroyModelMixin,
+                            viewsets.GenericViewSet):
+    """View for BaseRecipeAttr APIs."""
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Tags.objects.filter(user=self.request.user)
+        return self.queryset.filter(user=self.request.user).order_by('-name')
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class TagsViewSet(BaseRecipeAttrViewSet):
+    """"Views for Tags API."""
+    serializer_class = TagsSerializer
+    queryset = Tags.objects.all()
+
+
+class IngradientViewSet(BaseRecipeAttrViewSet):
+    """View for Ingradient APIs."""
+    serializer_class = IngradientSerializer
+    queryset = Ingradient.objects.all()

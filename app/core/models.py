@@ -52,12 +52,22 @@ class Recipe(models.Model):
     description = models.TextField(blank=True)
     link = models.TextField(max_length=255, blank=True)
     tags = models.ManyToManyField('Tags')
+    ingradient = models.ManyToManyField('Ingradient')
 
     def __str__(self):
         return self.title
 
 
 class Tags(models.Model):
+    name = models.CharField(max_length=255)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
+class Ingradient(models.Model):
     name = models.CharField(max_length=255)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
