@@ -1,6 +1,7 @@
 """
 Tests for models.
 """
+from unittest.mock import patch
 from decimal import Decimal
 
 from django.test import TestCase
@@ -86,3 +87,13 @@ class MotelTest(TestCase):
         ingradient = models.Ingradient.objects.create(
             name='New Ingradient', user=user)
         self.assertEqual(str(ingradient), ingradient.name)
+
+    @patch('core.models.uuid.uuid4')
+    def test_recipe_file_name_uuid(self, mock_uuid4):
+        """Test that image is saved in the correct location"""
+        uuid = 'test-uuid'
+        mock_uuid4.return_value = uuid
+        file_path = models.recipe_image_file_path(None, 'myimage.jpg')
+
+        exp_path = f'uploads/recipe/{uuid}.jpg'
+        self.assertEqual(file_path, exp_path)
