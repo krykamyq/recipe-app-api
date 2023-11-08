@@ -39,17 +39,31 @@ Follow these instructions to get the project up and running on your local machin
 
    ```bash
    git clone https://github.com/krykamyq/recipe-app-api.git
+
 2. Create a virtual environment (optional but recommended):
 
+    ```bash
     python -m venv env
     source env/bin/activate  # On Windows, use: env\Scripts\activate
+
 3. Install the project dependencies:
+
+    ```bash
     pip install -r requirements.txt
+
 4. Apply database migrations:
+
+    ```bash
     python manage.py migrate
+
 5. Create superuser account:
+
+    ```bash
     python manage.py createsuperuser
+
 6. Start the development server:
+
+    ```bash
     python manage.py runserver
 
 The API should now be accessible at http://127.0.0.1:8000/
