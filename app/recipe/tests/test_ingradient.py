@@ -1,5 +1,6 @@
 """"Test for Ingradient API"""
 
+from decimal import Decimal
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -7,7 +8,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 from rest_framework import status
 
-from core.models import Ingradient
+from core.models import Ingradient, Recipe
 
 from recipe.serializers import IngradientSerializer
 
@@ -109,3 +110,55 @@ class PrivateIngradientApiTests(TestCase):
 
         with self.assertRaises(Ingradient.DoesNotExist):
             Ingradient.objects.get(id=ingradient.id)
+
+    def test_find_ingradient_assigned_to_recipe(self):
+        """Test filtering ingradients by those assigned to recipes"""
+        in1 = Ingradient.objects.create(
+            user=self.user,
+            name='Ingradient 1',
+        )
+        in2 = Ingradient.objects.create(
+            user=self.user,
+            name='Ingradient 2',
+        )
+        recipe = Recipe.objects.create(
+            user=self.user,
+            title='Test Recipe',
+            time_minutes=10,
+            price=Decimal(10),
+            description='Test Description',)
+        recipe.ingradient.add(in1)
+
+        res = self.client.get(INGRAGIENT_URL, {'assigned_only': 1})
+        serializer1 = IngradientSerializer(in1)
+        serializer2 = IngradientSerializer(in2)
+        self.assertIn(serializer1.data, res.data)
+        self.assertNotIn(serializer2.data, res.data)
+
+    def test_ingradients_assigned_unique(self):
+        """Test filtering ingradients by assigned returns unique items"""
+        in1 = Ingradient.objects.create(
+            user=self.user,
+            name='Ingradient 1',
+        )
+        Ingradient.objects.create(
+            user=self.user,
+            name='Ingradient 2',
+        )
+        recipe1 = Recipe.objects.create(
+            user=self.user,
+            title='Test Recipe',
+            time_minutes=10,
+            price=Decimal(10),
+            description='Test Description',)
+        recipe2 = Recipe.objects.create(
+            user=self.user,
+            title='Test Recipe2',
+            time_minutes=10,
+            price=Decimal(10),
+        )
+        recipe1.ingradient.add(in1)
+        recipe2.ingradient.add(in1)
+
+        res = self.client.get(INGRAGIENT_URL, {'assigned_only': 1})
+        self.assertEqual(len(res.data), 1)

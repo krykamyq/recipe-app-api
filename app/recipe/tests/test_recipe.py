@@ -384,6 +384,58 @@ class PrivateRecipeApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(recipe.ingradient.count(), 0)
 
+    def test_filter_recipes_by_tags(self):
+        """Test returning recipes with specific tags."""
+        r1 = create_recipe(user=self.user, title='Thai vegetable curry')
+        r2 = create_recipe(user=self.user, title='Aubergine with tahini')
+
+        tag1 = Tags.objects.create(user=self.user, name='Breakfast')
+        tag2 = Tags.objects.create(user=self.user, name='Lunch')
+        r1.tags.add(tag1)
+        r2.tags.add(tag2)
+
+        r3 = create_recipe(user=self.user, title='Fish and chips')
+
+        params = {'tags': f'{tag1.id},{tag2.id}'}
+        res = self.client.get(RECIPES_URL, params)
+
+        s1 = RecipeSerializer(r1)
+        s2 = RecipeSerializer(r2)
+        s3 = RecipeSerializer(r3)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn(s1.data, res.data)
+        self.assertIn(s2.data, res.data)
+        self.assertNotIn(s3.data, res.data)
+
+    def test_filter_recipes_by_ingredients(self):
+        """Test returning recipes with specific ingredients."""
+        r1 = create_recipe(user=self.user, title='Thai vegetable curry')
+        r2 = create_recipe(user=self.user, title='Aubergine with tahini')
+
+        ingredient1 = Ingradient.objects.create(
+            user=self.user,
+            name='Thai',)
+        ingredient2 = Ingradient.objects.create(
+            user=self.user,
+            name='Dinner',)
+        r1.ingradient.add(ingredient1)
+        r2.ingradient.add(ingredient2)
+
+        r3 = create_recipe(user=self.user, title='Fish and chips')
+
+        params = {'ingredients': f'{ingredient1.id},{ingredient2.id}'}
+        res = self.client.get(RECIPES_URL, params)
+
+        s1 = RecipeSerializer(r1)
+        s2 = RecipeSerializer(r2)
+        s3 = RecipeSerializer(r3)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn(s1.data, res.data)
+        self.assertIn(s2.data, res.data)
+        self.assertNotIn(s3.data, res.data)
+
 
 class ImageUploadTest(TestCase):
     def setUp(self):
@@ -419,3 +471,4 @@ class ImageUploadTest(TestCase):
         res = self.client.post(url, {'image': 'notimage'}, format='multipart')
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
